@@ -3,15 +3,21 @@
 #ifndef PT_CONNECTION_HPP
 #define PT_CONNECTION_HPP
 
-#include <memory>
+#include <arpa/inet.h>
+#include <netinet/in.h>
 
-#include "link_code.h"
+#include <memory>
+#include <string>
+
+#include "linkcode.hpp"
 #include "types.h"
 
 class connection {
 protected:
   SOCKET sock = -1;
   const std::shared_ptr<linkcode> slink;
+
+  static uint32_t pubip;
 
   connection();
 
@@ -21,6 +27,12 @@ public:
   }
   virtual int connect(const std::shared_ptr<linkcode> clink) = 0;
   virtual int accept(const std::shared_ptr<linkcode> clink) = 0;
+
+  static uint32_t get_pubip();
+  static const inline std::string get_pubip_s() {
+    struct in_addr addr = {connection::get_pubip()};
+    return std::string(inet_ntoa(addr));
+  }
 };
 
 #endif

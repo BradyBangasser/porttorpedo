@@ -7,8 +7,8 @@
 #include <stdio.h>
 
 int main(int argc, char **argv) {
-  static char buffer[32] = {0};
-  static size_t blen = sizeof(buffer);
+  static char *buffer = NULL;
+  static size_t blen = 0;
 
   static char bufport[32] = {0};
   static size_t bplen = sizeof(bufport);
@@ -17,6 +17,7 @@ int main(int argc, char **argv) {
 
   printf("Enter pubip:\n");
   getline((char **)&buffer, &blen, stdin);
+  printf("Got: %ld %s\n", blen, buffer);
 
   printf("Enter port:\n");
   getline((char **)&bufport, &bplen, stdin);

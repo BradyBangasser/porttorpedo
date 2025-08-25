@@ -149,7 +149,7 @@ int natconnection::hp_con_udp(const std::shared_ptr<linkcode> plink) {
 
   static constexpr std::string_view msg = "Hi";
 
-  printf("Sending\n");
+  printf("Sending %d\n", ntohs(plink->port));
 
   sendto(this->psock, msg.data(), msg.size(), 0, (const struct sockaddr *)&addr,
          sizeof(addr));

@@ -10,8 +10,8 @@ int main(int argc, char **argv) {
   static char *buffer = NULL;
   static size_t blen = 0;
 
-  static char bufport[32] = {0};
-  static size_t bplen = sizeof(bufport);
+  static char *bufport = NULL;
+  static size_t bplen = 0;
 
   natconnection nc;
 
@@ -21,6 +21,8 @@ int main(int argc, char **argv) {
 
   printf("Enter port:\n");
   getline((char **)&bufport, &bplen, stdin);
+
+  printf("Got %s\n", bufport);
 
   std::shared_ptr<linkcode> plink =
       std::make_shared<linkcode>(buffer, std::atoi(bufport));

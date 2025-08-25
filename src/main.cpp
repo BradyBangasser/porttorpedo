@@ -26,8 +26,10 @@ int main(int argc, char **argv) {
       std::make_shared<linkcode>(buffer, std::atoi(bufport));
 
   if (argc == 2) {
+    printf("Client\n");
     nc.connect(plink);
   } else {
+    printf("Server\n");
     nc.accept(plink);
   }
 

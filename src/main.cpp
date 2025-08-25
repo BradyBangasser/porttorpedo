@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
     nc.accept(plink);
   }
 */
-  nc.hp_con(plink);
+  nc.hp_con_udp(plink);
 
   return 0;
 }

@@ -19,6 +19,7 @@ public:
   natconnection();
   int connect(const std::shared_ptr<linkcode> clink);
   int hp_con(const std::shared_ptr<linkcode> plink);
+  int hp_con_udp(const std::shared_ptr<linkcode> plink);
   virtual int accept(const std::shared_ptr<linkcode> clink);
 };
 

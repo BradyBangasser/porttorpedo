@@ -26,10 +26,12 @@ natconnection::natconnection() {
     throw std::exception();
   }
 
+  /*
   if (fcntl(this->psock, F_SETFL, O_NONBLOCK) == -1) {
     perror("fcntl");
     throw std::exception();
   }
+  */
 
   baddr.sin_addr.s_addr = INADDR_ANY;
   baddr.sin_port = 0;
@@ -134,4 +136,22 @@ int natconnection::hp_con(const std::shared_ptr<linkcode> plink) {
   printf("Connected %ld %d\n", write(this->psock, "hi", 3), cerr);
   perror("WRITE");
   return 1;
+}
+
+int natconnection::hp_con_udp(const std::shared_ptr<linkcode> plink) {
+  static char buffer[128] = {0};
+  struct sockaddr_in addr = {0}, iaddr = {0};
+  socklen_t al = sizeof(iaddr);
+
+  addr.sin_family = AF_INET;
+  addr.sin_addr.s_addr = plink->addr;
+  addr.sin_port = plink->port;
+
+  static constexpr std::string_view msg = "Hi";
+
+  sendto(this->psock, msg.data(), msg.size(), 0, (const struct sockaddr *)&addr,
+         sizeof(addr));
+
+  recvfrom(this->psock, (void *)buffer, sizeof(buffer), 0,
+           (struct sockaddr *)&iaddr, &al);
 }

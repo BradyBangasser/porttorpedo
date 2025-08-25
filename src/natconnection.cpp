@@ -102,26 +102,36 @@ int natconnection::hp_con(const std::shared_ptr<linkcode> plink) {
   struct sockaddr_in addr = {0};
   struct pollfd pfd = {this->psock, 0x0 | POLLOUT, 0x0};
   nfds_t nfds = 1;
-  int err = 0;
+  int err = 0, cerr = -1, serr;
+  socklen_t serrl = sizeof(serr);
 
   addr.sin_family = AF_INET;
   addr.sin_addr.s_addr = plink->addr;
   addr.sin_port = plink->port;
 
-  while (::connect(this->psock, (const struct sockaddr *)&addr, sizeof(addr)) ==
-             -1 &&
-         errno == EINPROGRESS) {
+  while (cerr == -1) {
     printf("Attempted connect\n");
+    cerr = ::connect(this->psock, (const struct sockaddr *)&addr, sizeof(addr));
+
+    if (cerr == 0)
+      break;
+
+    perror("fail");
+
     err = poll(&pfd, nfds, 5 * 1000);
     if (err == -1) {
       perror("POLL");
       return 2;
     } else if (err > 0) {
       // We are ready to read/write
+
+      getsockopt(this->psock, SOL_SOCKET, SO_ERROR, &serr, &serrl);
+      assert(pfd.revents & POLLOUT);
       break;
     }
   }
 
-  printf("Connected\n");
+  printf("Connected %ld %d\n", write(this->psock, "hi", 3), cerr);
+  perror("WRITE");
   return 1;
 }

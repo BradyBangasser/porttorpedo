@@ -22,7 +22,7 @@ natconnection::natconnection() {
   struct sockaddr_in baddr = {0};
   socklen_t l = sizeof(baddr);
 
-  if ((this->psock = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
+  if ((this->psock = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
     throw std::exception();
   }
 

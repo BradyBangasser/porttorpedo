@@ -40,8 +40,8 @@ connection::connection() {
     throw std::exception();
   }
 
-  printf("Address: %s, Port: %d\n", connection::get_pubip_s().c_str(),
-         ntohs(baddr.sin_port));
+  /* printf("Address: %s, Port: %d\n", connection::get_pubip_s().c_str(),
+         ntohs(baddr.sin_port)); */
 
   baddr.sin_addr.s_addr = INADDR_ANY;
 

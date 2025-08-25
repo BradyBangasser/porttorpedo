@@ -23,21 +23,14 @@ natconnection::natconnection() {
     throw std::exception();
   }
 
-  if (inet_aton("127.0.0.1", &lbaddr) == 0) {
-    // Not possible
+  if (bind(this->psock, (const struct sockaddr *)&baddr, sizeof(baddr)) == -1) {
+    perror("bind");
     throw std::exception();
   }
 
-  baddr.sin_addr = lbaddr;
-  baddr.sin_port = htons(80);
+  baddr.sin_addr.s_addr = INADDR_ANY;
+  baddr.sin_port = 0;
   baddr.sin_family = AF_INET;
-
-  if (::connect(this->psock, (const struct sockaddr *)&baddr, sizeof(baddr)) !=
-      -1) {
-    shutdown(this->psock, SHUT_RDWR);
-  }
-
-  memset((void *)&baddr, 0x0, sizeof(baddr));
 
   if ((getsockname(this->psock, (struct sockaddr *)&baddr, &l)) != 0) {
     perror("getsockname");
@@ -46,13 +39,6 @@ natconnection::natconnection() {
 
   printf("Address: %s, Port: %d\n", connection::get_pubip_s().c_str(),
          ntohs(baddr.sin_port));
-
-  baddr.sin_addr.s_addr = INADDR_ANY;
-
-  if (bind(this->psock, (const struct sockaddr *)&baddr, sizeof(baddr)) == -1) {
-    perror("bind");
-    throw std::exception();
-  }
 }
 
 int natconnection::accept(const std::shared_ptr<linkcode> clink) {
@@ -69,13 +55,16 @@ int natconnection::accept(const std::shared_ptr<linkcode> clink) {
 
   memset(&addr, 0x0, sizeof(addr));
 
-  if (listen(this->sock, 5) == 0)
+  if (listen(this->sock, 5) == -1) {
+    perror("listen");
     return 3;
+  }
 
   while ((this->ssock = ::accept(this->sock, (struct sockaddr *)&addr, &l)) !=
              -1 &&
-         addr.sin_addr.s_addr != clink->addr && close(this->ssock) == 0)
-    ;
+         addr.sin_addr.s_addr != clink->addr && close(this->ssock) == 0) {
+    printf("Something\n");
+  }
 
   assert(send(this->ssock, hello.data(), hello.size(), 0) == hello.size());
   return 1;
@@ -98,5 +87,20 @@ int natconnection::connect(const std::shared_ptr<linkcode> plink) {
 
   printf("recv: %s\n", buffer);
 
+  return 1;
+}
+
+int natconnection::hp_con(const std::shared_ptr<linkcode> plink) {
+  struct sockaddr_in addr = {0};
+
+  addr.sin_family = AF_INET;
+  addr.sin_addr.s_addr = plink->addr;
+  addr.sin_port = plink->port;
+
+  if (::connect(this->psock, (const struct sockaddr *)&addr, sizeof(addr)) !=
+      0) {
+    perror("Connect");
+    return 5;
+  }
   return 1;
 }

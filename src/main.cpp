@@ -25,6 +25,7 @@ int main(int argc, char **argv) {
   std::shared_ptr<linkcode> plink =
       std::make_shared<linkcode>(buffer, std::atoi(bufport));
 
+  /*
   if (argc == 2) {
     printf("Client\n");
     nc.connect(plink);
@@ -32,6 +33,8 @@ int main(int argc, char **argv) {
     printf("Server\n");
     nc.accept(plink);
   }
+*/
+  nc.hp_con(plink);
 
   return 0;
 }

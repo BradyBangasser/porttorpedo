@@ -1,6 +1,10 @@
 #include "natconnection.hpp"
 
+#include <cerrno>
 #include <stdio.h>
+
+#include <fcntl.h>
+#include <poll.h>
 
 #include <netinet/in.h>
 #include <netinet/ip.h>
@@ -16,21 +20,25 @@ static constexpr std::string_view hello = "Hello!!!!!";
 
 natconnection::natconnection() {
   struct sockaddr_in baddr = {0};
-  struct in_addr lbaddr = {0};
   socklen_t l = sizeof(baddr);
 
   if ((this->psock = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
     throw std::exception();
   }
 
-  if (bind(this->psock, (const struct sockaddr *)&baddr, sizeof(baddr)) == -1) {
-    perror("bind");
+  if (fcntl(this->psock, F_SETFL, O_NONBLOCK) == -1) {
+    perror("fcntl");
     throw std::exception();
   }
 
   baddr.sin_addr.s_addr = INADDR_ANY;
   baddr.sin_port = 0;
   baddr.sin_family = AF_INET;
+
+  if (bind(this->psock, (const struct sockaddr *)&baddr, sizeof(baddr)) == -1) {
+    perror("bind");
+    throw std::exception();
+  }
 
   if ((getsockname(this->psock, (struct sockaddr *)&baddr, &l)) != 0) {
     perror("getsockname");
@@ -92,15 +100,28 @@ int natconnection::connect(const std::shared_ptr<linkcode> plink) {
 
 int natconnection::hp_con(const std::shared_ptr<linkcode> plink) {
   struct sockaddr_in addr = {0};
+  struct pollfd pfd = {this->psock, 0x0 | POLLOUT, 0x0};
+  nfds_t nfds = 1;
+  int err = 0;
 
   addr.sin_family = AF_INET;
   addr.sin_addr.s_addr = plink->addr;
   addr.sin_port = plink->port;
 
-  if (::connect(this->psock, (const struct sockaddr *)&addr, sizeof(addr)) !=
-      0) {
-    perror("Connect");
-    return 5;
+  while (::connect(this->psock, (const struct sockaddr *)&addr, sizeof(addr)) ==
+             -1 &&
+         errno == EINPROGRESS) {
+    printf("Attempted connect\n");
+    err = poll(&pfd, nfds, 5 * 1000);
+    if (err == -1) {
+      perror("POLL");
+      return 2;
+    } else if (err > 0) {
+      // We are ready to read/write
+      break;
+    }
   }
+
+  printf("Connected\n");
   return 1;
 }

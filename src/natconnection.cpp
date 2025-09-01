@@ -139,6 +139,7 @@ int natconnection::hp_con(const std::shared_ptr<linkcode> plink) {
 int natconnection::hp_con_udp(const std::shared_ptr<linkcode> plink) {
   static char buffer[128] = {0};
   struct sockaddr_in addr = {0}, iaddr = {0};
+  struct pollfd pfd = {this->psock, POLLOUT, 0};
   socklen_t al = sizeof(iaddr);
 
   addr.sin_family = AF_INET;
@@ -153,9 +154,14 @@ int natconnection::hp_con_udp(const std::shared_ptr<linkcode> plink) {
     sendto(this->psock, msg.data(), msg.size(), 0,
            (const struct sockaddr *)&addr, sizeof(addr));
 
-    recvfrom(this->psock, (void *)buffer, sizeof(buffer), 0,
-             (struct sockaddr *)&iaddr, &al);
-  } while ();
+    if (poll(&pfd, 1, 100) < 0) {
+      perror("POLL");
+      return 6;
+    }
+
+  } while (pfd.events ^ POLLOUT);
+  recvfrom(this->psock, (void *)buffer, sizeof(buffer), 0,
+           (struct sockaddr *)&iaddr, &al);
 
   printf("Sent\n");
 

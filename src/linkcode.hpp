@@ -10,6 +10,9 @@
 #include <netinet/ip.h>
 #include <stdio.h>
 
+#include <format>
+#include <string>
+
 typedef struct linkcode {
   linkcode(const char *ip, uint16_t port) : port(htons(port)) {
     struct in_addr addr = {0};
@@ -19,6 +22,11 @@ typedef struct linkcode {
     }
 
     this->addr = addr.s_addr;
+  }
+
+  std::string to_string() {
+    struct in_addr a = {.s_addr = this->addr};
+    return std::format("{}:{}", inet_ntoa(a), ntohs(this->port));
   }
   // IP address in network order
   uint32_t addr;

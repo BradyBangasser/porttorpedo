@@ -9,6 +9,7 @@
 #include <stdio.h>
 
 int main(int argc, char **argv) {
+  printf("Test: %d\n", ntohs(get_natport(4444)));
   static char *buffer = NULL;
   static size_t blen = 0;
 

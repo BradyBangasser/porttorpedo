@@ -165,9 +165,8 @@ uint16_t get_natport(uint16_t lport) {
 
   // Just in case I want the IP addr
   *((int *)(buf + 28)) ^= htonl(0x2112A442);
-  *((short *)(buf + 26)) ^= htons(0x2112A442 >> 16);
 
-  return *(buf + 26);
+  return ntohs(*(uint16_t *)(buf + 26)) ^ (0x2112A442 >> 16);
 
 error:
   freeaddrinfo(res);

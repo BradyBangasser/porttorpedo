@@ -25,9 +25,6 @@ public:
   inline const std::shared_ptr<linkcode> get_slink() const {
     return this->slink;
   }
-  virtual int connect(const std::shared_ptr<linkcode> clink) = 0;
-  virtual int accept(const std::shared_ptr<linkcode> clink) = 0;
-
   static uint32_t get_pubip();
   static const inline std::string get_pubip_s() {
     struct in_addr addr = {connection::get_pubip()};

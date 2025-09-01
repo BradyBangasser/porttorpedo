@@ -4,7 +4,7 @@ OUT := $(PWD)/out
 
 CXX := g++
 CC  := gcc
-CXXFLAGS := -Og -g
+CXXFLAGS := -Og -g -std=c++23
 CFLAGS   := -Og -g
 CXXSRCS := $(wildcard $(SRC)/*.cpp)
 CSRCS   := $(wildcard $(SRC)/*.c)
@@ -26,7 +26,7 @@ $(EXE): $(OBJS)
 	$(CXX) -o $@ $^ $(CXXFLAGS)
 
 $(OUT)/%.cpp.o: $(SRC)/%.cpp
-	$(CXX) -c -o $@ $^
+	$(CXX) -c -o $@ $^ $(CXXFLAGS)
 
 $(OUT)/%.c.o: $(SRC)/%.c
 	$(CC) -c -o $@ $^

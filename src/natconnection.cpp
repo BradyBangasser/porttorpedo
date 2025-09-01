@@ -50,12 +50,16 @@ natconnection::natconnection() {
     throw std::exception();
   }
 
+  this->int_port = baddr.sin_port;
+  this->nat_port = get_natport(baddr.sin_port);
+
   printf("Address: %s, Port: %d\n", connection::get_pubip_s().c_str(),
-         ntohs(get_natport(baddr.sin_port)));
+         nat_port);
 }
 
 int natconnection::hp_con_udp(const std::shared_ptr<linkcode> plink) {
-  printf("Connecting from %s to %s\n", this->slink->to_string().c_str(),
+  printf("Connecting from %s:%d:%d to %s\n", this->get_pubip_s().c_str(),
+         ntohs(this->int_port), ntohs(this->nat_port),
          plink->to_string().c_str());
   static char buffer[128] = {0};
   struct sockaddr_in addr = {0}, iaddr = {0};

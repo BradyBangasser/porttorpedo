@@ -15,6 +15,9 @@ private:
   uint64_t slink_iter = 0;
   uint64_t rslink_iter = 0;
 
+  uint16_t nat_port;
+  uint16_t int_port;
+
 public:
   natconnection();
   int hp_con_udp(const std::shared_ptr<linkcode> plink);

@@ -4,8 +4,8 @@ OUT := $(PWD)/out
 
 CXX := g++
 CC  := gcc
-CXXFLAGS := 
-CFLAGS   :=
+CXXFLAGS := -Og -g
+CFLAGS   := -Og -g
 CXXSRCS := $(wildcard $(SRC)/*.cpp)
 CSRCS   := $(wildcard $(SRC)/*.c)
 
@@ -23,7 +23,7 @@ $(OUT):
 	mkdir -p $@
 
 $(EXE): $(OBJS)
-	$(CXX) -o $@ $^
+	$(CXX) -o $@ $^ $(CXXFLAGS)
 
 $(OUT)/%.cpp.o: $(SRC)/%.cpp
 	$(CXX) -c -o $@ $^

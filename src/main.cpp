@@ -4,6 +4,8 @@
 #include <cstdlib>
 #include <memory>
 
+#include "pubip.h"
+
 #include <stdio.h>
 
 int main(int argc, char **argv) {
@@ -27,15 +29,6 @@ int main(int argc, char **argv) {
   std::shared_ptr<linkcode> plink =
       std::make_shared<linkcode>(buffer, std::atoi(bufport));
 
-  /*
-  if (argc == 2) {
-    printf("Client\n");
-    nc.connect(plink);
-  } else {
-    printf("Server\n");
-    nc.accept(plink);
-  }
-*/
   nc.hp_con_udp(plink);
 
   return 0;

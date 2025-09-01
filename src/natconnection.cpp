@@ -1,4 +1,5 @@
 #include "natconnection.hpp"
+#include "pubip.h"
 
 #include <cerrno>
 #include <stdio.h>
@@ -21,6 +22,7 @@ static constexpr std::string_view hello = "Hello!!!!!";
 natconnection::natconnection() {
   struct sockaddr_in baddr = {0};
   socklen_t l = sizeof(baddr);
+  int sockopt = 1;
 
   if ((this->psock = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
     throw std::exception();
@@ -30,6 +32,9 @@ natconnection::natconnection() {
     perror("fcntl");
     throw std::exception();
   }
+
+  setsockopt(this->psock, SOL_SOCKET, SO_REUSEPORT, &sockopt, sizeof(sockopt));
+  setsockopt(this->psock, SOL_SOCKET, SO_REUSEADDR, &sockopt, sizeof(sockopt));
 
   baddr.sin_addr.s_addr = INADDR_ANY;
   baddr.sin_port = 0;
@@ -46,7 +51,7 @@ natconnection::natconnection() {
   }
 
   printf("Address: %s, Port: %d\n", connection::get_pubip_s().c_str(),
-         ntohs(baddr.sin_port));
+         ntohs(get_natport(baddr.sin_port)));
 }
 
 int natconnection::accept(const std::shared_ptr<linkcode> clink) {

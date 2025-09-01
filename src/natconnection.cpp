@@ -26,12 +26,10 @@ natconnection::natconnection() {
     throw std::exception();
   }
 
-  /*
   if (fcntl(this->psock, F_SETFL, O_NONBLOCK) == -1) {
     perror("fcntl");
     throw std::exception();
   }
-  */
 
   baddr.sin_addr.s_addr = INADDR_ANY;
   baddr.sin_port = 0;
@@ -151,11 +149,15 @@ int natconnection::hp_con_udp(const std::shared_ptr<linkcode> plink) {
 
   printf("Sending %d\n", ntohs(plink->port));
 
-  sendto(this->psock, msg.data(), msg.size(), 0, (const struct sockaddr *)&addr,
-         sizeof(addr));
+  do {
+    sendto(this->psock, msg.data(), msg.size(), 0,
+           (const struct sockaddr *)&addr, sizeof(addr));
+
+    recvfrom(this->psock, (void *)buffer, sizeof(buffer), 0,
+             (struct sockaddr *)&iaddr, &al);
+  } while ();
 
   printf("Sent\n");
 
-  recvfrom(this->psock, (void *)buffer, sizeof(buffer), 0,
-           (struct sockaddr *)&iaddr, &al);
+  ;
 }

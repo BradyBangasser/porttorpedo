@@ -10,26 +10,50 @@
 #include <string>
 
 #include "linkcode.hpp"
+#include "message.hpp"
+#include "peer.hpp"
 #include "types.h"
+
+namespace pt::network {
 
 class connection {
 protected:
-  SOCKET sock = -1;
-  const std::shared_ptr<linkcode> slink;
+  enum state {
+    DISCONNECTED = 0,
+    CONNECTED,
+    ERROR,
+    // Error and disconnected state
+    DERROR,
+  };
 
-  static uint32_t pubip;
+private:
+  static pt_conn_id c_ctr;
 
   connection();
 
+  enum state state = DISCONNECTED;
+
+protected:
+#warning "todo add state change notifications"
+  inline enum state set_state(enum state ns) { return (this->state = ns); }
+
+  SOCKET sock = -1;
+  static uint32_t pubip;
+  std::unique_ptr<linkcode> peer = NULL;
+
+  int on_message(std::unique_ptr<pt::message<const std::string>>) const;
+
+  connection(pt::peer::id);
+
 public:
-  inline const std::shared_ptr<linkcode> get_slink() const {
-    return this->slink;
-  }
   static uint32_t get_pubip();
   static const inline std::string get_pubip_s() {
     struct in_addr addr = {connection::get_pubip()};
     return std::string(inet_ntoa(addr));
   }
+
+  virtual int disconnect() = 0;
 };
+} // namespace pt::network
 
 #endif

@@ -13,6 +13,8 @@
 #include <format>
 #include <string>
 
+namespace pt {
+
 typedef struct linkcode {
   linkcode(const char *ip, uint16_t port) : port(htons(port)) {
     struct in_addr addr = {0};
@@ -35,5 +37,7 @@ typedef struct linkcode {
   uint8_t pad : 2;
   uint32_t check : 20;
 } linkcode;
+
+} // namespace pt
 
 #endif

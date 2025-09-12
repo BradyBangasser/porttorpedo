@@ -4,4 +4,6 @@
 
 #include "pubip.h"
 
-pt::network::connection::connection() {}
+std::shared_ptr<pt::network::mgr> pt::network::mgr::instance = NULL;
+
+pt::network::mgr::connection::connection() {}

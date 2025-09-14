@@ -1,8 +1,5 @@
 #pragma once
 
-#include <mutex>
-#include <thread>
-#include <vector>
 #ifndef PT_CONNECTION_HPP
 #define PT_CONNECTION_HPP
 
@@ -11,9 +8,12 @@
 
 #include <future>
 #include <memory>
+#include <mutex>
 #include <queue>
 #include <string>
+#include <thread>
 #include <unordered_map>
+#include <vector>
 
 #include "linkcode.hpp"
 #include "message.hpp"
@@ -23,7 +23,7 @@
 namespace pt::network {
 
 class mgr {
-private:
+public:
   class connection {
   public:
     enum state {
@@ -36,15 +36,13 @@ private:
 
   private:
     static pt_conn_id c_ctr;
-    static std::shared_ptr<mgr> mgr;
-
-    connection();
 
     enum state state = DISCONNECTED;
 
   protected:
 #warning "todo add state change notifications"
     inline int set_state(enum state ns) { return (this->state = ns); }
+    connection();
 
     SOCKET sock = -1;
     static uint32_t pubip;
@@ -58,10 +56,9 @@ private:
       struct in_addr addr = {connection::get_pubip()};
       return std::string(inet_ntoa(addr));
     }
-
-    virtual int disconnect() = 0;
   };
 
+private:
   static std::shared_ptr<mgr> instance;
 
   std::unordered_map<pt_conn_id, connection> conns;
@@ -74,20 +71,19 @@ private:
 
   int new_msg_w();
 
-  mgr();
-
   int msg_w_f();
 
 public:
   static inline std::shared_ptr<mgr> get_instance() {
-    return instance == NULL ? (instance = std::make_shared<mgr>(mgr()))
-                            : instance;
+    return instance == NULL ? (instance = std::make_shared<mgr>()) : instance;
   }
 
   int pcs_msg(pt::message<std::string> msg);
   template <typename S, typename T>
   std::future<std::unique_ptr<pt::message<T>>>
   send_msg(std::unique_ptr<pt::message<T>> msg);
+
+  mgr() {}
 };
 
 } // namespace pt::network

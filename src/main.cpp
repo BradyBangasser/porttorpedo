@@ -9,7 +9,7 @@
 #include <stdio.h>
 
 int main(int argc, char **argv) {
-  printf("Test: %d\n", ntohs(get_natport(htons(4444))));
+  printf("Test: %x\n", ntohs(get_natport(htons(0x6967))));
   static char *buffer = NULL;
   static size_t blen = 0;
 
@@ -27,8 +27,8 @@ int main(int argc, char **argv) {
 
   printf("Got %s\n", bufport);
 
-  std::shared_ptr<linkcode> plink =
-      std::make_shared<linkcode>(buffer, std::atoi(bufport));
+  std::shared_ptr<pt::linkcode> plink =
+      std::make_shared<pt::linkcode>(buffer, std::atoi(bufport));
 
   nc.hp_con_udp(plink);
 

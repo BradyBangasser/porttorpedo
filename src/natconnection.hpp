@@ -5,13 +5,13 @@
 
 #include "connection.hpp"
 
-class natconnection : connection {
+class natconnection : pt::network::mgr::connection {
 private:
   // client peer link
   SOCKET psock = -1;
   // server peer link
   SOCKET ssock = -1;
-  const std::shared_ptr<linkcode> rslink;
+  const std::shared_ptr<pt::linkcode> rslink;
   uint64_t slink_iter = 0;
   uint64_t rslink_iter = 0;
 
@@ -20,7 +20,7 @@ private:
 
 public:
   natconnection();
-  int hp_con_udp(const std::shared_ptr<linkcode> plink);
+  int hp_con_udp(const std::shared_ptr<pt::linkcode> plink);
 };
 
 #endif

@@ -57,7 +57,7 @@ natconnection::natconnection() {
          nat_port);
 }
 
-int natconnection::hp_con_udp(const std::shared_ptr<linkcode> plink) {
+int natconnection::hp_con_udp(const std::shared_ptr<pt::linkcode> plink) {
   printf("Connecting from %s:%d:%d to %s\n", this->get_pubip_s().c_str(),
          ntohs(this->int_port), ntohs(this->nat_port),
          plink->to_string().c_str());

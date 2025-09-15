@@ -1,6 +1,5 @@
 #pragma once
 
-#include <string_view>
 #ifndef PT_LANCONNECTION_HPP
 #define PT_LANCONNECTION_HPP
 
@@ -20,7 +19,14 @@
   FN(CLIENT)                                                                   \
   FN(SERVER)
 
+#ifdef PT_LAN_PORT
+#undef PT_LAN_PORT
+#endif
+
+#define PT_LAN_PORT 46575
+
 #include <optional>
+#include <string_view>
 #include <thread>
 
 #include "connection.hpp"
@@ -36,6 +42,7 @@ public:
 
 private:
   static SOCKET hsock;
+  static constexpr uint16_t port = PT_LAN_PORT;
 
   static std::optional<std::thread> con_w;
 

@@ -10,6 +10,9 @@
 
 using namespace pt::network;
 
+template <> int lanconnection::handshake<true>(SOCKET sock) { return 0; }
+template <> int lanconnection::handshake<false>(SOCKET sock) { return 0; }
+
 std::optional<std::thread> lanconnection::con_w = std::nullopt;
 SOCKET lanconnection::hsock = -1;
 
@@ -86,7 +89,7 @@ int lanconnection::con_handler() {
       return 7;
     }
 
-    lanconnection::
+    lanconnection::handshake<true>(icon);
   }
 
   return 0;
@@ -109,4 +112,6 @@ lanconnection::lanconnection(pt::linkcode lc) {
   if (connect(this->sock, (const struct sockaddr *)&addr, addr_l) == -1) {
     throw 2;
   }
+
+  lanconnection::handshake<false>(this->sock);
 }

@@ -48,6 +48,8 @@ private:
 
   static int con_handler();
 
+  template <bool S> static int handshake(SOCKET);
+
 public:
   static int start();
 

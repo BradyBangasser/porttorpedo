@@ -86,8 +86,7 @@ int lanconnection::con_handler() {
       return 7;
     }
 
-    ::write(icon, buffer.data(), buffer.size());
-    return 0;
+    lanconnection::
   }
 
   return 0;
@@ -96,6 +95,10 @@ int lanconnection::con_handler() {
 lanconnection::lanconnection(pt::linkcode lc) {
   struct sockaddr_in addr = {0};
   socklen_t addr_l = sizeof(addr);
+
+  addr.sin_addr.s_addr = lc.addr;
+  addr.sin_port = htons(PT_LAN_PORT);
+  addr.sin_family = AF_INET;
 
   char buffer[32] = {0};
 
@@ -106,8 +109,4 @@ lanconnection::lanconnection(pt::linkcode lc) {
   if (connect(this->sock, (const struct sockaddr *)&addr, addr_l) == -1) {
     throw 2;
   }
-
-  recv(this->sock, buffer, sizeof(buffer), 0);
-
-  printf("%s\n", buffer);
 }
